@@ -65,6 +65,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # The deploy step pushes to gh-pages; this repo's default token is read-only.
+    permissions:
+      contents: write
+
     strategy:
       matrix:      
         # node-version 可以只留自己需要的版本！！
