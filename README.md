@@ -12,7 +12,7 @@ npm install gh-pages --save-dev
 
 ```json
 "predeploy": "npm run build",
-"deploy": "gh-pages -d build",
+"deploy": "gh-pages -d dist",
 ```
 
 一般情形會長這樣
@@ -20,11 +20,13 @@ npm install gh-pages --save-dev
 ```json
 "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "deploy": "gh-pages -d dist",
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "test": "vitest run"
 },
 ```
 
@@ -33,8 +35,10 @@ npm install gh-pages --save-dev
 ```json
 "homepage": "https://{你的githubID}.github.io/{你的專案名稱}/",
 // 以我的專案例子來看
-"homepage": "https://bobo100.github.io/AutoAction-ReactTest/",
+"homepage": "https://bobo100.github.io/github-actions-react-test/",
 ```
+
+如果是用 Vite 建立的專案，還需要在 vite.config.js 設定 base，例如 `base: '/github-actions-react-test/'`，不然部屬後會找不到檔案
 
 完成後便可以執行
 
@@ -64,7 +68,7 @@ jobs:
     strategy:
       matrix:      
         # node-version 可以只留自己需要的版本！！
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [22.x]
 
     steps:
     - uses: actions/checkout@v3
@@ -74,13 +78,12 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run build --if-present
-      env:
-        CI: false
-    # - run: npm test
+    - run: npm run lint
+    - run: npm run build
+    - run: npm test
     
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@v4
       with:
-        folder: build # The folder the action should deploy.
+        folder: dist # The folder the action should deploy.
 ```
